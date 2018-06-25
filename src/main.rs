@@ -14,6 +14,8 @@
  * limitations under the License.
 */
 
+use std::env;
+
 static NAMES_UPTO_TWENTY: [&'static str; 20] = [
 	"", "one", "two", "three", "four", "five", "six", "seven", "eight",
 	"nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
@@ -220,11 +222,7 @@ fn conway_weschler(digits: &str) -> String {
 }
 
 fn main() {
-	println!("42: {}", conway_weschler("42"));
-	println!("9: {}", conway_weschler("009"));
-	println!("104: {}", conway_weschler("104"));
-	println!("65536: {}", conway_weschler("65536"));
-	println!("1000000: {}", conway_weschler("1000000"));
-	println!("7000000000: {}", conway_weschler("7000000000"));
-	println!("20000000000000: {}", conway_weschler("20000000000000"));
+	for arg in env::args().skip(1) {
+		println!("{}", conway_weschler(arg.as_str()));
+	}
 }
