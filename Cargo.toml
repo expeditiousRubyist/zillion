@@ -4,3 +4,8 @@ version = "0.1.0"
 authors = ["rubyist <rubyist.personal@openmailbox.org>"]
 
 [dependencies]
+
+[profile.release]
+lto=true
+opt-level=3
+panic='abort'
