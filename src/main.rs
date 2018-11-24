@@ -15,6 +15,7 @@
 */
 
 use std::env;
+use std::io;
 
 static NAMES_UPTO_TWENTY: [&'static str; 20] = [
 	"", "one", "two", "three", "four", "five", "six", "seven", "eight",
@@ -221,8 +222,33 @@ fn conway_weschler(digits: &str) -> String {
 	output
 }
 
-fn main() {
-	for arg in env::args().skip(1) {
+fn handle_arguments(argv : Vec<String>) {
+	for arg in argv.iter() {
 		println!("{}", conway_weschler(arg.as_str()));
 	}
 }
+
+fn handle_stdin() {
+	let input = io::stdin();
+	let mut buf = String::new();
+
+	while let Ok(_) = input.read_line(&mut buf) {
+		{
+			let stripped = buf.trim();
+			if stripped.is_empty() {
+				break;
+			}
+			println!("{}", conway_weschler(stripped));
+		}
+		buf.clear();
+	}
+}
+
+fn main() {
+	let argv : Vec<String> = env::args().skip(1).collect();
+	match argv.len() {
+		0 => handle_stdin(),
+		_ => handle_arguments(argv),
+	}
+}
+
