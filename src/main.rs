@@ -122,12 +122,12 @@ fn zillion_prefix(num: usize) -> String {
 	if ts > 0 {
 		// Special unit place endings
 		match (us, ts) {
-			(3, 2...5) | (3, 8) => name.push('s'), // tres
-			(6, 2...5)          => name.push('s'), // ses
+			(3, 2..=5) | (3, 8) => name.push('s'), // tres
+			(6, 2..=5)          => name.push('s'), // ses
 			(6, 8)              => name.push('x'), // sex
-			(7, 1) | (7, 3...7) => name.push('n'), // septen
+			(7, 1) | (7, 3..=7) => name.push('n'), // septen
 			(7, 2) | (7, 8)     => name.push('m'), // septem
-			(9, 1) | (9, 3...7) => name.push('n'), // noven
+			(9, 1) | (9, 3..=7) => name.push('n'), // noven
 			(9, 2) | (9, 8)     => name.push('m'), // novem
 			_ => (),
 		}
@@ -138,12 +138,12 @@ fn zillion_prefix(num: usize) -> String {
 	else {
 		// Special unit place endings
 		match (us, hs) {
-			(3, 1) | (3, 3...5) | (3, 8) => name.push('s'), // tres
+			(3, 1) | (3, 3..=5) | (3, 8) => name.push('s'), // tres
 			(6, 1) | (6, 8) => name.push('x'), // sex
-			(6, 3...5)      => name.push('s'), // ses
-			(7, 1...7)      => name.push('n'), // septen
+			(6, 3..=5)      => name.push('s'), // ses
+			(7, 1..=7)      => name.push('n'), // septen
 			(7, 8)          => name.push('m'), // septem
-			(9, 1...7)      => name.push('n'), // noven
+			(9, 1..=7)      => name.push('n'), // noven
 			(9, 8)          => name.push('m'), // novem
 			_ => (),
 		}
