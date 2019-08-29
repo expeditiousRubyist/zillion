@@ -4,7 +4,6 @@ version = "0.2.0"
 authors = ["rubyist <rubyist.personal@openmailbox.org>"]
 
 [dependencies]
-num-bigint = "0.3"
 
 [profile.release]
 lto=true
