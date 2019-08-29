@@ -157,12 +157,12 @@ fn zillion_prefix(num: usize) -> String {
 }
 
 // Input: a sequence of digits (0-9) of arbitrary length
-// Output: a proper name using the conway-weschler system
-fn conway_weschler(digits: &str) -> String {
+// Output: a proper name using the conway-wechsler system
+fn conway_wechsler(digits: &str) -> String {
 	// Input sanity check
 	assert!(digits.chars().all(|c| {
 		c.is_digit(10)
-	}), "Unrecognized input character in conway_weschler (not 0-9).");
+	}), "Unrecognized input character in conway_wechsler (not 0-9).");
 
 	// Skip leading zeroes. If all characters are 0, return "zero"
 	let tmp = digits.find(|c| c != '0');
@@ -222,9 +222,20 @@ fn conway_weschler(digits: &str) -> String {
 	output
 }
 
+fn usage() {
+	println!("Usage: zillion [OPTIONS] [num]");
+	println!("Produces a Conway-Wechsler name for a given number");
+	println!("Running without arguments causes num to be read from stdin");
+	println!("");
+	println!("Options:");
+	println!("    -h, --help     Print this message");
+	println!("    -p, --power    Compute for 10^num instead");
+}
+
 fn handle_arguments(argv : Vec<String>) {
-	for arg in argv.iter() {
-		println!("{}", conway_weschler(arg.as_str()));
+	match argv[0].as_str() {
+		"-h" | "--help" => usage(),
+		num  => println!("{}", conway_wechsler(num))
 	}
 }
 
@@ -238,7 +249,7 @@ fn handle_stdin() {
 			if stripped.is_empty() {
 				break;
 			}
-			println!("{}", conway_weschler(stripped));
+			println!("{}", conway_wechsler(stripped));
 		}
 		buf.clear();
 	}
