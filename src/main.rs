@@ -14,8 +14,17 @@
  * limitations under the License.
 */
 
+extern crate num_traits;
+extern crate num_bigint;
+
 use std::env;
 use std::io;
+use std::str::FromStr;
+
+use num_traits::cast::ToPrimitive;
+use num_traits::identities::Zero;
+use num_traits::identities::One;
+use num_bigint::BigUint;
 
 static NAMES_UPTO_TWENTY: [&'static str; 20] = [
 	"", "one", "two", "three", "four", "five", "six", "seven", "eight",
@@ -222,6 +231,47 @@ fn conway_wechsler(digits: &str) -> String {
 	output
 }
 
+// Input: A string representation of some number n
+// Output: A Conway-Wechsler name for 10^n
+fn power_of_ten(num: &str) -> String {
+	let mut power = BigUint::from_str(num).unwrap();
+
+	// Get the leading word (e.g. "ten" in "ten million")
+	let m = (&power % 3u32).to_u32().unwrap();
+	let s = match m {
+		0 => "One",
+		1 => "Ten",
+		2 => "One hundred",
+		_ => unreachable!(),
+	};
+	let mut output = String::from(s);
+
+	// Convert into power of one thousand
+	// We may return early for edge cases.
+	power /= 3u32;
+	if power.is_zero() { return output; }
+	if power.is_one() {
+		output.push_str(" thousand");
+		return output;
+	}
+
+	// Compute zillion number.
+	power -= 1u32;
+	output.push_str(" ");
+	let loc = output.len(); // Location to insert prefixes at
+
+	// Add prefixes in reverse order because we are stupid and inefficient.
+	while !power.is_zero() {
+		let m = (&power % 1000u32).to_usize().unwrap();
+		let prefix = zillion_prefix(m);
+		output.insert_str(loc, prefix.as_str());
+		power /= 1000u32;
+	}
+
+	output.push_str("on");
+	output
+}
+
 fn usage() {
 	println!("Usage: zillion [OPTIONS] [num]");
 	println!("Produces a Conway-Wechsler name for a given number");
@@ -235,6 +285,11 @@ fn usage() {
 fn handle_arguments(argv : Vec<String>) {
 	match argv[0].as_str() {
 		"-h" | "--help" => usage(),
+		"-p" | "--power" => 
+			if argv.len() > 1 {
+				println!("{}", power_of_ten(&argv[1]));
+			}
+			else { panic!("No argument provided for --power"); },
 		num  => println!("{}", conway_wechsler(num))
 	}
 }
