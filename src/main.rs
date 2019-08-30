@@ -14,8 +14,17 @@
  * limitations under the License.
 */
 
+extern crate num_traits;
+extern crate num_bigint;
+
 use std::env;
 use std::io;
+use std::str::FromStr;
+
+use num_traits::cast::ToPrimitive;
+use num_traits::identities::Zero;
+use num_traits::identities::One;
+use num_bigint::BigUint;
 
 static NAMES_UPTO_TWENTY: [&'static str; 20] = [
 	"", "one", "two", "three", "four", "five", "six", "seven", "eight",
@@ -157,12 +166,12 @@ fn zillion_prefix(num: usize) -> String {
 }
 
 // Input: a sequence of digits (0-9) of arbitrary length
-// Output: a proper name using the conway-weschler system
-fn conway_weschler(digits: &str) -> String {
+// Output: a proper name using the conway-wechsler system
+fn conway_wechsler(digits: &str) -> String {
 	// Input sanity check
 	assert!(digits.chars().all(|c| {
 		c.is_digit(10)
-	}), "Unrecognized input character in conway_weschler (not 0-9).");
+	}), "Unrecognized input character in conway_wechsler (not 0-9).");
 
 	// Skip leading zeroes. If all characters are 0, return "zero"
 	let tmp = digits.find(|c| c != '0');
@@ -222,9 +231,66 @@ fn conway_weschler(digits: &str) -> String {
 	output
 }
 
+// Input: A string representation of some number n
+// Output: A Conway-Wechsler name for 10^n
+fn power_of_ten(num: &str) -> String {
+	let mut power = BigUint::from_str(num).unwrap();
+
+	// Get the leading word (e.g. "ten" in "ten million")
+	let m = (&power % 3u32).to_u32().unwrap();
+	let s = match m {
+		0 => "One",
+		1 => "Ten",
+		2 => "One hundred",
+		_ => unreachable!(),
+	};
+	let mut output = String::from(s);
+
+	// Convert into power of one thousand
+	// We may return early for edge cases.
+	power /= 3u32;
+	if power.is_zero() { return output; }
+	if power.is_one() {
+		output.push_str(" thousand");
+		return output;
+	}
+
+	// Compute zillion number.
+	power -= 1u32;
+	output.push_str(" ");
+	let loc = output.len(); // Location to insert prefixes at
+
+	// Add prefixes in reverse order because we are stupid and inefficient.
+	while !power.is_zero() {
+		let m = (&power % 1000u32).to_usize().unwrap();
+		let prefix = zillion_prefix(m);
+		output.insert_str(loc, prefix.as_str());
+		power /= 1000u32;
+	}
+
+	output.push_str("on");
+	output
+}
+
+fn usage() {
+	println!("Usage: zillion [OPTIONS] [num]");
+	println!("Produces a Conway-Wechsler name for a given number");
+	println!("Running without arguments causes num to be read from stdin");
+	println!("");
+	println!("Options:");
+	println!("    -h, --help     Print this message");
+	println!("    -p, --power    Compute for 10^num instead");
+}
+
 fn handle_arguments(argv : Vec<String>) {
-	for arg in argv.iter() {
-		println!("{}", conway_weschler(arg.as_str()));
+	match argv[0].as_str() {
+		"-h" | "--help" => usage(),
+		"-p" | "--power" => 
+			if argv.len() > 1 {
+				println!("{}", power_of_ten(&argv[1]));
+			}
+			else { panic!("No argument provided for --power"); },
+		num  => println!("{}", conway_wechsler(num))
 	}
 }
 
@@ -238,7 +304,7 @@ fn handle_stdin() {
 			if stripped.is_empty() {
 				break;
 			}
-			println!("{}", conway_weschler(stripped));
+			println!("{}", conway_wechsler(stripped));
 		}
 		buf.clear();
 	}
