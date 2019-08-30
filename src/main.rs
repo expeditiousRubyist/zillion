@@ -239,9 +239,9 @@ fn power_of_ten(num: &str) -> String {
 	// Get the leading word (e.g. "ten" in "ten million")
 	let m = (&power % 3u32).to_u32().unwrap();
 	let s = match m {
-		0 => "One",
-		1 => "Ten",
-		2 => "One hundred",
+		0 => "one",
+		1 => "ten",
+		2 => "one hundred",
 		_ => unreachable!(),
 	};
 	let mut output = String::from(s);
