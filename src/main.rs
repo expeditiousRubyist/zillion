@@ -59,8 +59,7 @@ fn handle_stdin(
 fn main() -> Result<(), ParseError> {
 	// Parse command line arguments
 	let matches = clap_app!(zillion =>
-		(version: "0.5.0")
-		(author: "Rubyist")
+		(version: "0.5.1")
 		(about: "Produces a natural language name for a given number")
 		(@arg POWER: -p --power "Compute a name for a power of ten")
 		(@arg NAMEFN: -n --namefn +takes_value possible_value[conway knuth]
